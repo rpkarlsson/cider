@@ -760,17 +760,15 @@ If TYPE is nil or multi, return all repls.  If TYPE is a list of types,
 return only REPLs of type contained in the list.  If ENSURE is non-nil,
 throw an error if no linked session exists."
   (let ((type (cond
-               ((listp type)
-                (mapcar #'cider-maybe-intern type))
-               ((cider-maybe-intern type))))
-        (repls (if ensure
-                 (cdr (sesman-ensure-session 'CIDER))
-                 (mapcar 'cadr  (sesman-current-sessions 'CIDER)))))
-    (or (seq-filter (lambda (b)
-                      (cider--match-repl-type type b))
-                    repls)
-        (when ensure
-          (cider--no-repls-user-error type)))))
+                ((listp type) (mapcar #'cider-maybe-intern type))
+                ((cider-maybe-intern type))))
+         (repls (mapcar 'cadr  (sesman-current-sessions 'CIDER))))
+    (or
+      (seq-filter
+        (lambda (b) (cider--match-repl-type type b))
+        repls)
+      (when ensure
+        (cider--no-repls-user-error type)))))
 
 (defun cider-map-repls (which function)
   "Call FUNCTION once for each appropriate REPL as indicated by WHICH.

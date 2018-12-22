@@ -763,9 +763,9 @@ throw an error if no linked session exists."
                ((listp type)
                 (mapcar #'cider-maybe-intern type))
                ((cider-maybe-intern type))))
-        (repls (cdr (if ensure
-                        (sesman-ensure-session 'CIDER)
-                      (sesman-current-session 'CIDER)))))
+        (repls (if ensure
+                 (cdr (sesman-ensure-session 'CIDER))
+                 (mapcar 'cadr  (sesman-current-sessions 'CIDER)))))
     (or (seq-filter (lambda (b)
                       (cider--match-repl-type type b))
                     repls)

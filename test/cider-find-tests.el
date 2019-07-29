@@ -35,3 +35,19 @@
   (it "raises a user error if the op is not supported"
     (spy-on 'cider-nrepl-op-supported-p :and-return-value nil)
     (expect (cider-find-ns) :to-throw 'user-error)))
+
+
+(describe "cider--find-ns"
+  (before-each
+    (spy-on 'cider-jump-to)
+    (spy-on 'cider-find-file))
+  (it "handles ordinary file paths"
+    (let ((path "file:/path/to/file.suffix"))
+      (spy-on 'cider-sync-request:ns-path :and-return-value path)
+      (cider--find-ns "")
+      (expect 'cider-find-file :to-have-been-called-with path)))
+  (it "handles files in jars"
+    (let ((path "file:/path/to/jar.jar!/path/file.suffix"))
+      (spy-on 'cider-sync-request:ns-path :and-return-value path)
+      (cider--find-ns "")
+      (expect 'cider-find-file :to-have-been-called-with (concat "jar:" path)))))

@@ -174,7 +174,13 @@ Invert meaning of `cider-prompt-for-symbol' if PREFIX indicates it should be."
   "Find the file containing NS's definition.
 Optionally open it in a different window if OTHER-WINDOW is truthy."
   (if-let* ((path (cider-sync-request:ns-path ns)))
-      (cider-jump-to (cider-find-file path) nil other-window)
+      (cider-jump-to
+       (cider-find-file
+        (if (string-match "^file:\\(.+\\).jar!/\\(.+\\)" path)
+            (concat "jar:" path)
+          path))
+       nil
+       other-window)
     (user-error "Can't find namespace `%s'" ns)))
 
 ;;;###autoload

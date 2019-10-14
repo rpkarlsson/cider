@@ -556,12 +556,12 @@ COMMENT-POSTFIX is the text to output after the last line."
      (lambda (_buffer value)
        (setq res (concat res value)))
      nil
-     nil
+     (lambda (_buffer err) (cider-emit-interactive-eval-err-output err))
      (lambda (buffer)
        (with-current-buffer buffer
          (save-excursion
            (goto-char (marker-position location))
-           (let ((lines (split-string res "[\n]+" t)))
+           (when-let ((lines (split-string res "[\n]+" t)))
              ;; only the first line gets the normal comment-prefix
              (insert (concat comment-prefix (pop lines)))
              (dolist (elem lines)
